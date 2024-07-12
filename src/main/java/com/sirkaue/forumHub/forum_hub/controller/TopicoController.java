@@ -40,5 +40,10 @@ public class TopicoController {
         return ResponseEntity.ok(page);
     }
 
-
+    @GetMapping("/{id}")
+    @Transactional(readOnly = true)
+    public ResponseEntity detalhar(@PathVariable Long id) {
+        Topico topico = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+    }
 }
