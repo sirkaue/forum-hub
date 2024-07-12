@@ -1,5 +1,6 @@
 package com.sirkaue.forumHub.forum_hub.controller;
 
+import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosAtualizacaoTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosCadastroTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosDetalhamentoTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosListagemTopico;
@@ -39,5 +40,17 @@ public class TopicoController {
     public ResponseEntity<DadosDetalhamentoTopico> detalhar(@PathVariable Long id) {
         DadosDetalhamentoTopico dadosDetalhamentoTopico = service.detalhar(id);
         return ResponseEntity.ok(dadosDetalhamentoTopico);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DadosDetalhamentoTopico> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoTopico dados) {
+        DadosDetalhamentoTopico dadosDetalhamentoTopico = service.atualizar(id, dados);
+        return ResponseEntity.ok(dadosDetalhamentoTopico);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }
