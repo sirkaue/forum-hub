@@ -2,9 +2,13 @@ package com.sirkaue.forumHub.forum_hub.service;
 
 import com.sirkaue.forumHub.forum_hub.domain.topico.Topico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.TopicoRepository;
+import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosAtualizacaoTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosCadastroTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosDetalhamentoTopico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosListagemTopico;
+import com.sirkaue.forumHub.forum_hub.service.exceptions.DuplicidadeTopicoException;
+import com.sirkaue.forumHub.forum_hub.service.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +23,13 @@ public class TopicoService {
 
     @Transactional
     public DadosDetalhamentoTopico cadastrar(DadosCadastroTopico dados) {
-        Topico topico = repository.save(new Topico(dados));
-        return new DadosDetalhamentoTopico(topico);
+        try {
+            validarDuplicidade(dados.mensagem());
+            Topico topico = repository.save(new Topico(dados));
+            return new DadosDetalhamentoTopico(topico);
+        } catch (EntityNotFoundException e) {
+            throw new DuplicidadeTopicoException("Já existe um tópico com o mesmo título ou mensagem. ");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -30,7 +39,38 @@ public class TopicoService {
 
     @Transactional(readOnly = true)
     public DadosDetalhamentoTopico detalhar(Long id) {
-        Topico topico = repository.getReferenceById(id);
-        return new DadosDetalhamentoTopico(topico);
+        try {
+            Topico topico = repository.getReferenceById(id);
+            return new DadosDetalhamentoTopico(topico);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("ID do tópico inválido. Forneça um ID válido. " + id);
+        }
+    }
+
+    @Transactional
+    public DadosDetalhamentoTopico atualizar(Long id, DadosAtualizacaoTopico dados) {
+        try {
+            Topico topico = repository.getReferenceById(id);
+            topico.setTitulo(dados.titulo());
+            topico.setMensagem(dados.mensagem());
+            topico = repository.save(topico);
+            return new DadosDetalhamentoTopico(topico);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("ID do tópico inválido. Forneça um ID válido. " + id);
+        }
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("ID do tópico inválido. Forneça um ID válido. " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    public void validarDuplicidade(String mensagem) {
+        if (repository.existsByMensagem(mensagem)) {
+            throw new DuplicidadeTopicoException("Já existe um tópico com o mesmo título e mensagem. ");
+        }
     }
 }
