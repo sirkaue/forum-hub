@@ -2,10 +2,7 @@ package com.sirkaue.forumHub.forum_hub.service;
 
 import com.sirkaue.forumHub.forum_hub.domain.topico.Topico;
 import com.sirkaue.forumHub.forum_hub.domain.topico.TopicoRepository;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosAtualizacaoTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosCadastroTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosDetalhamentoTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosListagemTopico;
+import com.sirkaue.forumHub.forum_hub.domain.topico.dto.*;
 import com.sirkaue.forumHub.forum_hub.service.exceptions.DuplicidadeTopicoException;
 import com.sirkaue.forumHub.forum_hub.service.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,11 +19,11 @@ public class TopicoService {
     private TopicoRepository repository;
 
     @Transactional
-    public DadosDetalhamentoTopico cadastrar(DadosCadastroTopico dados) {
+    public DadosDetalhamentoCadastroTopico cadastrar(DadosCadastroTopico dados) {
         try {
             validarDuplicidade(dados.mensagem());
             Topico topico = repository.save(new Topico(dados));
-            return new DadosDetalhamentoTopico(topico);
+            return new DadosDetalhamentoCadastroTopico(topico);
         } catch (EntityNotFoundException e) {
             throw new DuplicidadeTopicoException("Já existe um tópico com o mesmo título ou mensagem. ");
         }

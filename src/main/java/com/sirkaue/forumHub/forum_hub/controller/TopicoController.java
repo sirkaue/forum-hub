@@ -1,14 +1,12 @@
 package com.sirkaue.forumHub.forum_hub.controller;
 
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosAtualizacaoTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosCadastroTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosDetalhamentoTopico;
-import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosListagemTopico;
+import com.sirkaue.forumHub.forum_hub.domain.topico.dto.*;
 import com.sirkaue.forumHub.forum_hub.service.TopicoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +22,16 @@ public class TopicoController {
     private TopicoService service;
 
     @PostMapping
-    public ResponseEntity<DadosDetalhamentoTopico> cadastrar(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder) {
-        DadosDetalhamentoTopico dadosDetalhamentoTopico = service.cadastrar(dados);
-        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(dadosDetalhamentoTopico.id()).toUri();
-        return ResponseEntity.created(uri).body(dadosDetalhamentoTopico);
+    public ResponseEntity<DadosDetalhamentoCadastroTopico> cadastrar(@RequestBody @Valid DadosCadastroTopico dados,
+                                                             UriComponentsBuilder uriBuilder) {
+        var dadosDetalhamentoCadastroTopico = service.cadastrar(dados);
+        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(dadosDetalhamentoCadastroTopico.id()).toUri();
+        return ResponseEntity.created(uri).body(dadosDetalhamentoCadastroTopico);
     }
 
     @GetMapping
-    public ResponseEntity<Page<DadosListagemTopico>> listar(@PageableDefault(sort = {"dataCriacao"}) Pageable pageable) {
+    public ResponseEntity<Page<DadosListagemTopico>> listar(@PageableDefault(sort = {"dataCriacao"},
+            direction = Sort.Direction.ASC) Pageable pageable) {
         Page<DadosListagemTopico> page = service.listar(pageable);
         return ResponseEntity.ok(page);
     }
