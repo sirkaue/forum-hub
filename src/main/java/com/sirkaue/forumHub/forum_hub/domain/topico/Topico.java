@@ -1,10 +1,12 @@
 package com.sirkaue.forumHub.forum_hub.domain.topico;
 
 import com.sirkaue.forumHub.forum_hub.domain.topico.dto.DadosCadastroTopico;
+import com.sirkaue.forumHub.forum_hub.domain.topico.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "topicos")
@@ -27,6 +29,9 @@ public class Topico {
     private Status status;
     private String autor;
     private String curso;
+
+    @ElementCollection
+    private List<String> respostas;
 
     public Topico(DadosCadastroTopico dados) {
         titulo = dados.titulo();
