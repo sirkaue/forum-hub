@@ -1,4 +1,4 @@
-package com.sirkaue.forumHub.forum_hub.controller.exceptions;
+package com.sirkaue.forumHub.forum_hub.infra.exceptions;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
